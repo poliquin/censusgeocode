@@ -47,6 +47,9 @@ def main():
         help='Time period Census data (address ranges) refer to'
     )
     parser.add_argument('--timeout', metavar='SECONDS', type=int, default=12, help='Request timeout [default: 12]')
+    parser.add_argument('--no-out-header', action='store_true', help=(
+        'Do not add a header line when writing batch geocoding results')
+    )
 
     args = parser.parse_args()
     cg = CensusGeocode(benchmark=args.benchmark, vintage=args.vintage)
@@ -75,7 +78,8 @@ def main():
         fieldnames = cg.batchfields[args.rettype] + ['lat', 'lon']
         fieldnames.pop(fieldnames.index('coordinate'))
         writer = csv.DictWriter(sys.stdout, fieldnames=fieldnames)
-        writer.writeheader()
+        if not args.no_out_header:
+            writer.writeheader()
         writer.writerows(result)
 
     else:
